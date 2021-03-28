@@ -11,7 +11,7 @@ const listContacts = async (userId) => {return await Contact.find({owner: userId
 
 const getContactById = async (contactId, userId) => {
   const id = idNormalized(contactId)
- return  await Contact.find({ _id: contactId, owner: userId }.populate({
+ return  await Contact.findOne({ _id: contactId, owner: userId }.populate({
   path: 'owner',
   select: 'email -_id',
 }))
@@ -19,7 +19,7 @@ const getContactById = async (contactId, userId) => {
 
 const removeContact = async (contactId, userId) => {
   const id = idNormalized(contactId)
-  const record = Contact.findByIdAndRemove({_id: contactId, owner: userId})
+  const record = Contact.findOneAndRemove({_id: contactId, owner: userId})
   return record
 }
 
@@ -30,7 +30,7 @@ const addContact = async (body) => {
 
 const updateContact = async (contactId, body, userId) => {
   const id = idNormalized(contactId)
-  const record = await Contact.findByIdAndUpdate(
+  const record = await Contact.findOneAndUpdate(
     {_id: contactId, owner: userId},
     { ...body },
     {new: true},

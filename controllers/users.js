@@ -6,8 +6,8 @@ const SECRET_KEY = process.env.JWT_SECRET
 
 const register = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    const user = await Users.findByEmail(email);
+    const { email } = req.body
+    const user = await Users.findByEmail(email)
     if (user) {
       return res.status(HttpCode.CONFLICT).json({
         status: 'error',
@@ -58,32 +58,41 @@ const login = async (req, res, next) => {
     next(e)
   }
 }
-/* const login = async (req, res, next) => {
+
+const logout = async (req, res, next) => {
+  const id = req.user.id 
+  await Users.updateToken(id, null)
+  return res.status(HttpCode.NO_CONTENT).json({})
+}
+
+const currentUser = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    const user = await Users.findByEmail(email);
-    if (user) {
-      return res.status(HttpCode.CONFLICT).json({
-        status: 'error',
-        code: HttpCode.CONFLICT,
-        data: 'Conflict',
-        message: 'Email is in use',
-      })
-    }
-    const newUser = await Users.create(req.body);
-    return res.status(HttpCode.CREATED).json({
-      status: 'success',
-      code: HttpCode.CREATED,
-      data: {
-        email: newUser.email,
-        subscription: newUser.subscription,
-      },
-    });
-  } catch (e) {
-    next(e)
-  }
-} */
+  const token = req.user.token
+  const user = await Users.findByToken(token)
+  if (!user) {
+    return res.status(HttpCode.UNAUTHORIZED).json({
+      status: 'error',
+      code: HttpCode.UNAUTHORIZED,
+      data: 'UNAUTHORIZED',
+      message: 'Not authorized',
+    })
+}
+return res.status(HttpCode.OK).json({
+  status: 'success',
+  code: HttpCode.OK,
+  data: {
+    email: user.email,
+    subscription: user.subscription
+  },
+})
+}
+catch (e){
+  next(e)
+}
+} 
 module.exports = {
   register,
   login,
+  logout,
+  currentUser,
 }
