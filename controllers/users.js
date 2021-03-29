@@ -1,8 +1,13 @@
 const jwt = require('jsonwebtoken')
 const Users = require('../model/users')
+const fs = require('fs').promises
+const path = require('path')
+const Jimp = require('jimp')
 const { HttpCode } = require('../helpers/constants')
 require('dotenv').config()
 const SECRET_KEY = process.env.JWT_SECRET
+
+const createFolderIsExist = require('../helpers/create-dir')
 
 const register = async (req, res, next) => {
   try {
@@ -16,13 +21,14 @@ const register = async (req, res, next) => {
         message: 'Email is in use',
       })
     }
-    const newUser = await Users.create(req.body);
+    const newUser = await Users.create(req.body)
     return res.status(HttpCode.CREATED).json({
       status: 'success',
       code: HttpCode.CREATED,
       data: {
         email: newUser.email,
         subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL,
       },
     })
   } catch (e) {
@@ -35,7 +41,9 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body
     const user = await Users.findByEmail(email)
-    if (!user || !user.validPassword(password)) {
+    const isValidPassword = await user?.validPassword(password)
+    if (!user || !isValidPassword) {
+   /*  if (!user || !user.validPassword(password)) */ 
       return res.status(HttpCode.UNAUTHORIZED).json({
         status: 'error',
         code: HttpCode.UNAUTHORIZED,
@@ -90,9 +98,29 @@ catch (e){
   next(e)
 }
 } 
+
+
+/* const avatars = async (req, res, next) => {
+  try {
+    const id = req.user.id
+    const AVATARS_OF_USERS =process.env.AVATARS_OF_USERS
+    const pathFile = req.file.path
+    const newNameAvatar = `${Date.now()}-${req.file.originalname}`
+    const img = await Jimp.read(pathFile)
+    await img
+    .autocrop()
+    .cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
+    .writeAsync(pathFile)
+    await createFolderIsExist(path.join(AVATARS_OF_USERS, images, id))
+    }
+   catch (e) {
+    next(e)
+  }} */
+
 module.exports = {
   register,
   login,
   logout,
   currentUser,
-}
+  /* avatars, */
+} 

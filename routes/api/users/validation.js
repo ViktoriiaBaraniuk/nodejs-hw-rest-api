@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('joi')
 const { HttpCode } = require('../../../helpers/constants')
 
 const schemaCreateUser  = Joi.object({
@@ -17,7 +17,7 @@ const validate = (schema, obj, next) => {
       const [{ message }] = error.details
       return next({
         status: HttpCode.BAD_REQUEST,
-        message: `Field: ${message.replace(/'/g, '')}`
+        message: `Field: ${message.replace(/"/g, '')}`
       })
     }
     next()

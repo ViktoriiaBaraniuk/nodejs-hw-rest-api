@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('joi')
 
 const schemaCreateContact  = Joi.object({
     name: Joi.string()
@@ -32,7 +32,7 @@ const validate = (schema, obj, next) => {
       const [{ message }] = error.details
       return next({
         status: 400,
-        message: `Field: ${message.replace(/"/g, '')}`
+        message: `Field:  ${message.replace(/"/g, '')}`
       })
     }
     next()

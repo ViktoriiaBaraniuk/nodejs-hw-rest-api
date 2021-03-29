@@ -11,7 +11,7 @@ const userSchema = new Schema(
       required: [true, 'Email required'],
       unique: true,
       validate(value) {
-        const re = /\S+@\S+\.\S+/;
+        const re = /\S+@\S+\.\S+/
         return re.test(String(value).toLowerCase())
       },
     },
@@ -28,6 +28,12 @@ const userSchema = new Schema(
       ],
       default: SubscriptionType.FREE,
     },
+    avatarURL: {
+      type: String,
+      default: function () {
+        return gravatar.url(this.email, { s: '250' }, true)
+      },
+    },
     token: {
       type: String,
       default: null,
@@ -43,11 +49,11 @@ userSchema.pre('save', async function (next) {
   const salt = await bcrypt.genSalt(SALT_WORK_FACTOR)
   this.password = await bcrypt.hash(this.password, salt, null)
   next()
-});
+})
 
 userSchema.methods.validPassword = async function (password) {
   return await bcrypt.compare(password, this.password)
-};
+}
 
 const User = model('user', userSchema)
 

@@ -10,11 +10,11 @@ const db = mongoose.connect(uriDb, {
 })
 
 mongoose.connection.on('connected', () => {
-    console.log('Database connection successful');
+    console.log('Database connection successful')
 })
 
 mongoose.connection.on('error', () => {
-    console.log(`Mongoose connection error: ${err.message}`);
+    console.log(`Mongoose connection error: ${err.message}`)
 })
 
 mongoose.connection.on('disconnected', () => {

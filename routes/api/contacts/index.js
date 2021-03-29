@@ -1,5 +1,5 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 const validate = require('./validation')
 const contactsController = require('../../../controllers/contacts')
 const guard = require('../../../helpers/guard')
@@ -12,4 +12,4 @@ router
   .delete('/:contactId', guard, contactsController.remove)
   .patch('/:contactId', guard, validate.updateContact, contactsController.update)
 
-module.exports = router;
+module.exports = router
