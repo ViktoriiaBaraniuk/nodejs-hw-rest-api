@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema, model } = mongoose
 const bcrypt = require('bcryptjs')
+const gravatar = require('gravatar')
 const { SubscriptionType } = require('../../helpers/constants')
 const SALT_WORK_FACTOR = 8
 
@@ -28,7 +29,7 @@ const userSchema = new Schema(
       ],
       default: SubscriptionType.FREE,
     },
-    avatarURL: {
+    avatarUrl: {
       type: String,
       default: function () {
         return gravatar.url(this.email, { s: '250' }, true)

@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
       data: {
         email: newUser.email,
         subscription: newUser.subscription,
-        avatarURL: newUser.avatarURL,
+        avatarUrl: newUser.avatarUrl,
       },
     })
   } catch (e) {
@@ -100,9 +100,23 @@ catch (e){
 } 
 
 
-/* const avatars = async (req, res, next) => {
+const avatars = async (req, res, next) => {
   try {
     const id = req.user.id
+   const avatarUrl = await saveAvatarToStatic(req)
+  await Users.updateAvatar(id, avatarUrl)
+  return res.json({
+    status: 'success',
+    code: HttpCode.OK,
+    data: {
+      avatarUrl,
+    },
+  })
+    }
+   catch (e) {
+    next(e)
+  }}
+  const saveAvatarToStatic = async (req, res, next) => {
     const AVATARS_OF_USERS =process.env.AVATARS_OF_USERS
     const pathFile = req.file.path
     const newNameAvatar = `${Date.now()}-${req.file.originalname}`
@@ -111,16 +125,20 @@ catch (e){
     .autocrop()
     .cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
     .writeAsync(pathFile)
-    await createFolderIsExist(path.join(AVATARS_OF_USERS, images, id))
-    }
-   catch (e) {
-    next(e)
-  }} */
-
+    await createFolderIsExist(path.join(AVATARS_OF_USERS, 'images'))
+    await fs.rename(pathFile, path.join(AVATARS_OF_USERS, 'images', newNameAvatar))
+  const avatarUrl = path.normalize(path.join(newNameAvatar))
+  try {
+    await fs.unlink(path.join(process.cwd(), AVATARS_OF_USERS, 'images', req.user.avatarUrl))
+  } catch (e) {
+    console.log(e.message)
+  }
+    return avatarUrl
+  }
 module.exports = {
   register,
   login,
   logout,
   currentUser,
-  /* avatars, */
+  avatars,
 } 
